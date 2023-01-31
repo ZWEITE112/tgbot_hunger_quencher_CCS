@@ -1,25 +1,18 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.contrib.fsm_storage.redis import RedisStorage2
-
-
-from tgbot.config import load_config
+from bot_cls import MainCls, bot_cls
 from tgbot.filters.admin import AdminFilter
 from tgbot.handlers.admin import register_admin
 from tgbot.handlers.echo import register_echo
 from tgbot.handlers.user import register_user
 from tgbot.middlewares.environment import EnvironmentMiddleware
 
-
 logger = logging.getLogger(__name__)
 
 
 def register_all_middlewares(dp, config):
     dp.setup_middleware(EnvironmentMiddleware(config=config))
-    # dp.setup_middleware(DbMiddleware())
 
 
 def register_all_filters(dp):
@@ -32,35 +25,35 @@ def register_all_handlers(dp):
     register_echo(dp)
 
 
-async def main():
+async def main(bot_cls: MainCls):
     logging.basicConfig(
         level=logging.INFO,
         format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
     )
     logger.info("Starting bot")
-    config = load_config(".env")
 
-    storage = RedisStorage2() if config.tg_bot.use_redis else MemoryStorage()
-    bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
-    dp = Dispatcher(bot, storage=storage)
+    bot_cls.bot['config'] = bot_cls.config
 
-    bot['config'] = config
+    register_all_middlewares(bot_cls.dp, bot_cls.config)
+    register_all_filters(bot_cls.dp)
+    register_all_handlers(bot_cls.dp)
 
-    register_all_middlewares(dp, config)
-    register_all_filters(dp)
-    register_all_handlers(dp)
+    bot_cls.initializer.run()
+
+    # TODO
+    # Проверить есть ли в базе данных данные, если да то забить болт, елси нет - заполнить базу данных данными
 
     # start
     try:
-        await dp.start_polling()
+        await bot_cls.dp.start_polling()
     finally:
-        await dp.storage.close()
-        await dp.storage.wait_closed()
-        await bot.session.close()
+        await bot_cls.dp.storage.close()
+        await bot_cls.dp.storage.wait_closed()
+        await bot_cls.bot.session.close()
 
 
 if __name__ == '__main__':
     try:
-        asyncio.run(main())
+        asyncio.run(main(bot_cls))
     except (KeyboardInterrupt, SystemExit):
         logger.error("Bot stopped!")

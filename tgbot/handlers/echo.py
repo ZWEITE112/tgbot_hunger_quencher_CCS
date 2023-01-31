@@ -17,15 +17,13 @@ async def bot_echo_all(message: types.Message, state: FSMContext, config):
     state_name = await state.get_state()
 
     if state_name == 'key_input':
-        # if message.text == telegram_bot.config.tg_bot.user_key: #2
         if message.text == config.tg_bot.user_key:
-            await message.answer("Замечательно! Перед демонстрацией меню, пожалуйста, напищите мне свои ФИО.")
+            await message.answer("Замечательно, вы ввели верный ключ! Перед демонстрацией меню, пожалуйста, напищите мне свои ФИО.")
             await state.set_state("full_name")
         else:
             await message.answer("Вы ввели неверный ключ, попробуйте ещё раз.")
     elif state_name == "full_name":
-        # await message.answer(f"Здравствуйте, {message.text}, мы готовы принять ваш заказ.")
-        await message.answer("Я получил ваши данные, теперь выбирите, что хотите заказать.")
+        await message.answer(f"Я получил ваши данные, {message.text}. Теперь выбирите, что хотите заказать.")
     else:
         text = (
             f'Эхо в состоянии {hcode(state_name)}\n',
