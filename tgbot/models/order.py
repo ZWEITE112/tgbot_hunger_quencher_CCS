@@ -4,13 +4,13 @@ from sqlalchemy.orm import relationship, backref
 from tgbot.models.base_model import BaseModel
 
 
-class Orders(BaseModel):
+class Order(BaseModel):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
-    user = relationship('Users', uselist=False, backref=backref('orders', cascade='all, delete-orphan'))
+    user = relationship('User', uselist=False, backref=backref('orders', cascade='all, delete-orphan'))
 
     order_list = Column(Unicode(1024))
 

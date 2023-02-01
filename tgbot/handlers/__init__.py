@@ -1,2 +1,4 @@
-def register_command_handlers():
-    from tgbot.handlers.start import send_welcome
+from aiogram import bot
+
+def send_message(chat_id, text):
+    bot.send_message(chat_id, text)

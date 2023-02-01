@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, Unicode
 from tgbot.models.base_model import BaseModel
 
 
-class Users(BaseModel):
+class User(BaseModel):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

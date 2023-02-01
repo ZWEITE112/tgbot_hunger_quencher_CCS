@@ -4,9 +4,11 @@ import logging
 from bot_cls import MainCls, bot_cls
 from tgbot.filters.admin import AdminFilter
 from tgbot.handlers.admin import register_admin
-from tgbot.handlers.echo import register_echo
+from tgbot.handlers.callback import register_callback
 from tgbot.handlers.user import register_user
+from tgbot.handlers.echo import register_echo
 from tgbot.middlewares.environment import EnvironmentMiddleware
+from tgbot.misc.bl import check_readiness
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,9 @@ def register_all_filters(dp):
 
 def register_all_handlers(dp):
     # register_admin(dp)
+    register_callback(dp)
     register_user(dp)
+
     register_echo(dp)
 
 
@@ -40,8 +44,8 @@ async def main(bot_cls: MainCls):
 
     bot_cls.initializer.run()
 
-    # TODO
-    # Проверить есть ли в базе данных данные, если да то забить болт, елси нет - заполнить базу данных данными
+    check_readiness()
+
 
     # start
     try:

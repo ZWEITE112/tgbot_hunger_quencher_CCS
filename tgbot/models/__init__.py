@@ -1,6 +1,6 @@
 
 def setup():
     from tgbot.models.bakery import Bakery
-    from tgbot.models.main_courses import MainCourses
-    from tgbot.models.users import Users
-    from tgbot.models.orders import Orders
+    from tgbot.models.main_courses import MainCourse
+    from tgbot.models.user import User
+    from tgbot.models.order import Order
