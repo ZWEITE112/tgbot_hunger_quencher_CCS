@@ -20,8 +20,6 @@ async def admin_menu(callback_query: types.CallbackQuery, state: FSMContext):
 
     if orders:
         for order in orders:
-            print(order.user_id)
-            print(order.user)
             order_list = order.order_list.split('|')
             order_string = ''
             for order_item in range(len(order_list)):
@@ -36,7 +34,7 @@ async def admin_menu(callback_query: types.CallbackQuery, state: FSMContext):
         await state.set_state("admin_cmd_orders_completed")
         await callback_query.message.edit_reply_markup()
         await callback_query.message.answer(
-            "Невыполненные заказы продемонстрированы сверху", reply_markup=inline_keyboard.kb_admin_oc
+            "Невыполненные заказы продемонстрированы сверху", reply_markup=inline_keyboard.kb_admin_orders_completed
         )
     else:
         await callback_query.message.answer("В базе отсутствуют незавершённые заказы!")

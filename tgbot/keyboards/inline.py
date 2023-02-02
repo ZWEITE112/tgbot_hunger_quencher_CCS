@@ -8,28 +8,28 @@ from aiogram.utils.callback_data import CallbackData
 
 class InLineKb:
     def __init__(self):
-        self.inline_btn_go = InlineKeyboardButton("Получить заказы", callback_data="button_get_orders")
-        self.inline_btn_oc = InlineKeyboardButton("Выполнить все заказы", callback_data="button_orders_completed")
+        self.inline_btn_get_orders = InlineKeyboardButton("Получить заказы", callback_data="button_get_orders")
+        self.inline_btn_orders_completed = InlineKeyboardButton("Выполнить все заказы",
+                                                                callback_data="button_orders_completed")
 
         self.inline_btn_new_order = InlineKeyboardButton("Новый заказ", callback_data="button_new_order")
 
-        self.inline_btn_mc = InlineKeyboardButton("Вторые блюда", callback_data="button_main_courses")
-        self.inline_btn_b = InlineKeyboardButton("Выпечка", callback_data="button_bakery")
-
-        self.inline_btn_mc = InlineKeyboardButton("Вторые блюда", callback_data="button_main_courses")
-        self.inline_btn_b = InlineKeyboardButton("Выпечка", callback_data="button_bakery")
+        self.inline_btn_main_courses = InlineKeyboardButton("Вторые блюда", callback_data="button_main_courses")
+        self.inline_btn_bakery = InlineKeyboardButton("Выпечка", callback_data="button_bakery")
 
         self.come_back_btn = InlineKeyboardButton("Назад", callback_data="come_back")
-        self.inline_btn_op = InlineKeyboardButton("Оформление заказа", callback_data="button_ordering")
-        self.inline_btn_finish_op = InlineKeyboardButton("Закончить оформление заказа",
-                                                         callback_data="button_finish_ordering")
+        self.inline_btn_ordering = InlineKeyboardButton("Оформление заказа", callback_data="button_ordering")
+        self.inline_btn_finish_finish_ordering = InlineKeyboardButton("Закончить оформление заказа",
+                                                                      callback_data="button_finish_ordering")
 
         self.kb_new_order = InlineKeyboardMarkup().add(self.inline_btn_new_order)
 
-        self.kb_admin = InlineKeyboardMarkup().add(self.inline_btn_go)
-        self.kb_admin_oc = InlineKeyboardMarkup().add(self.inline_btn_oc)
+        self.kb_admin = InlineKeyboardMarkup().add(self.inline_btn_get_orders)
+        self.kb_admin_orders_completed = InlineKeyboardMarkup().add(self.inline_btn_orders_completed)
 
-        self.kb_menu = InlineKeyboardMarkup().row(self.inline_btn_mc, self.inline_btn_b).add(self.inline_btn_op)
+        self.kb_menu = InlineKeyboardMarkup().row(
+            self.inline_btn_main_courses,
+            self.inline_btn_bakery).add(self.inline_btn_ordering)
 
         self._main_courses_btn = None
 
@@ -41,7 +41,10 @@ class InLineKb:
         self.kb_bakery_menu = InlineKeyboardMarkup(row_width=1).add(*self.bakery_btn)
         self.kb_bakery_menu.add(self.come_back_btn)
 
-        self.kb_order_menu = InlineKeyboardMarkup(row_width=1).add(self.inline_btn_finish_op, self.come_back_btn)
+        self.kb_order_menu = InlineKeyboardMarkup(row_width=1).add(
+            self.inline_btn_finish_finish_ordering,
+            self.come_back_btn
+            )
 
     @property
     def bakery_btn(self):

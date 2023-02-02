@@ -16,7 +16,6 @@ def compare_data(json_name: str, model_cls: BaseModel):
             model_cls.dish_name == course,
             model_cls.price == price
         ).first() is None:
-            print(course, price)
             new_course = model_cls(
                 dish_name=course,
                 price=price

@@ -88,12 +88,6 @@ async def kb_order_menu(callback_query: types.CallbackQuery, state: FSMContext):
         await state.set_state("view_menu")
         await callback_query.answer()
     elif callback_query.data == "button_finish_ordering":
-        # if await state.get_state() == 'admin_menu':
-        #     await callback_query.message.answer(
-        #         "В данный момент невозможно офромить заказ."
-        #     )
-        #     return
-
         user_model = bot_cls.sql.session.query(Users).filter(Users.tg_id==callback_query.from_user.id).first()
 
         order = Order.get_or_create(user_model.id)
