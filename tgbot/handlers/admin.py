@@ -31,17 +31,20 @@ async def admin_menu(callback_query: types.CallbackQuery, state: FSMContext):
             f'{total_price_counter.total_count}'
         )
 
-# await callback_query.message.answer('sdfdsfsdfsdf', reply_markup=):
-#     orders = bot_cls.sql.session.query(Order).filter(Order.Checked == False).all()
-#
-#     for order in orders:
-#         order.Checked = True
-#         bot_cls.sql.protected_commit()
+
+async def admin_cmd_orders_completed(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.message.answer('sdfdsfsdfsdf', reply_markup=inline_keyboard.kb_admin_oc)
+    orders = bot_cls.sql.session.query(Order).filter(Order.Checked == False).all()
+
+    for order in orders:
+        order.Checked = True
+        bot_cls.sql.protected_commit()
 
 
 def register_admin(dp: Dispatcher):
     dp.register_message_handler(admin_start, commands=["start"], state="*", is_admin=True)
     dp.register_callback_query_handler(admin_menu, state="admin_menu", is_admin=True)
+    dp.register_callback_query_handler(admin_cmd_orders_completed, state="admin_menu", is_admin=True)
 
     # if message.from_user.id == config.tg_bot.admin_ids:
     #     await state.set_state("admin_menu")

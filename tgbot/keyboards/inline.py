@@ -23,6 +23,7 @@ class InLineKb:
                                                          callback_data="button_finish_ordering")
 
         self.kb_admin = InlineKeyboardMarkup().add(self.inline_btn_go)
+        self.kb_admin_oc = InlineKeyboardMarkup().add(self.inline_btn_oc)
 
         self.kb_menu = InlineKeyboardMarkup().row(self.inline_btn_mc, self.inline_btn_b).add(self.inline_btn_op)
 
