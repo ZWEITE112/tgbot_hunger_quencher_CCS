@@ -50,4 +50,3 @@ def register_user(dp: Dispatcher):
     dp.register_message_handler(check_secret_key, state="key_input", content_types=types.ContentTypes.TEXT)
     dp.register_message_handler(checkin_user_name, state="full_name", content_types=types.ContentTypes.TEXT)
     dp.register_message_handler(new_user, state="new_user", content_types=types.ContentTypes.TEXT)
-    dp.register_message_handler(view_main_courses, state="view_menu")
