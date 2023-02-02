@@ -15,7 +15,7 @@ async def user_start(message: Message, state: FSMContext, config):
     if not_accepting_orders:
         await state.set_state('submitting_an_order_for_execution')
         await message.reply("Ваш заказ ещё обрабатывается.")
-    elif state.get_state() != "submitting_an_order_for_execution":
+    elif await state.get_state() != "submitting_an_order_for_execution":
         await message.reply("Здраствуйте, чтобы активировать меня, введите секретный ключ.")
         await state.set_state('key_input')
 

@@ -9,7 +9,9 @@ from aiogram.utils.callback_data import CallbackData
 class InLineKb:
     def __init__(self):
         self.inline_btn_go = InlineKeyboardButton("Получить заказы", callback_data="button_get_orders")
-        self.inline_btn_oc = InlineKeyboardButton("Заказы выполнены", callback_data="button_orders_completed")
+        self.inline_btn_oc = InlineKeyboardButton("Выполнить все заказы", callback_data="button_orders_completed")
+
+        self.inline_btn_new_order = InlineKeyboardButton("Новый заказ", callback_data="button_new_order")
 
         self.inline_btn_mc = InlineKeyboardButton("Вторые блюда", callback_data="button_main_courses")
         self.inline_btn_b = InlineKeyboardButton("Выпечка", callback_data="button_bakery")
@@ -22,32 +24,48 @@ class InLineKb:
         self.inline_btn_finish_op = InlineKeyboardButton("Закончить оформление заказа",
                                                          callback_data="button_finish_ordering")
 
+        self.kb_new_order = InlineKeyboardMarkup().add(self.inline_btn_new_order)
+
         self.kb_admin = InlineKeyboardMarkup().add(self.inline_btn_go)
         self.kb_admin_oc = InlineKeyboardMarkup().add(self.inline_btn_oc)
 
         self.kb_menu = InlineKeyboardMarkup().row(self.inline_btn_mc, self.inline_btn_b).add(self.inline_btn_op)
 
-        self.main_courses_btn = [
-            InlineKeyboardButton(
-                f"{course.dish_name} - {course.price}руб.", callback_data=f"button_main_courses{course.id}"
-            )
-            for course in bot_cls.sql.session.query(MainCourse).all()
-        ]
+        self._main_courses_btn = None
 
         self.kb_main_courses_menu = InlineKeyboardMarkup(row_width=1).add(*self.main_courses_btn)
         self.kb_main_courses_menu.add(self.come_back_btn)
 
-        self.bakery_btn = (
-            InlineKeyboardButton(
-                f"{course.dish_name} - {course.price}руб.", callback_data=f"button_bakery{course.id}"
-            )
-            for course in bot_cls.sql.session.query(Bakery).all()
-        )
+        self._bakery_btn = None
 
         self.kb_bakery_menu = InlineKeyboardMarkup(row_width=1).add(*self.bakery_btn)
         self.kb_bakery_menu.add(self.come_back_btn)
 
         self.kb_order_menu = InlineKeyboardMarkup(row_width=1).add(self.inline_btn_finish_op, self.come_back_btn)
+
+    @property
+    def bakery_btn(self):
+        if self._bakery_btn is None:
+            self._bakery_btn = (
+                InlineKeyboardButton(
+                    f"{course.dish_name} - {course.price}руб.", callback_data=f"button_bakery{course.id}"
+                )
+                for course in bot_cls.sql.session.query(Bakery).all()
+            )
+
+        return self._bakery_btn
+
+    @property
+    def main_courses_btn(self):
+        if self._main_courses_btn is None:
+            self._main_courses_btn = [
+                InlineKeyboardButton(
+                    f"{course.dish_name} - {course.price}руб.", callback_data=f"button_main_courses{course.id}"
+                )
+                for course in bot_cls.sql.session.query(MainCourse).all()
+            ]
+
+        return self._main_courses_btn
 
 
 inline_keyboard = InLineKb()

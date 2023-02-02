@@ -3,10 +3,7 @@ import logging
 
 from bot_cls import MainCls, bot_cls
 from tgbot.filters.admin import AdminFilter
-from tgbot.handlers.admin import register_admin
-from tgbot.handlers.callback import register_callback
-from tgbot.handlers.user import register_user
-from tgbot.handlers.echo import register_echo
+# from tgbot.handlers.echo import register_echo
 from tgbot.middlewares.environment import EnvironmentMiddleware
 from tgbot.misc.bl import check_readiness
 
@@ -22,11 +19,15 @@ def register_all_filters(dp):
 
 
 def register_all_handlers(dp):
-    # register_admin(dp)
+    from tgbot.handlers.admin import register_admin
+    from tgbot.handlers.callback import register_callback
+    from tgbot.handlers.user import register_user
+
+    register_admin(dp)
     register_callback(dp)
     register_user(dp)
 
-    register_echo(dp)
+    # register_echo(dp)
 
 
 async def main(bot_cls: MainCls):
@@ -38,14 +39,13 @@ async def main(bot_cls: MainCls):
 
     bot_cls.bot['config'] = bot_cls.config
 
-    register_all_middlewares(bot_cls.dp, bot_cls.config)
-    register_all_filters(bot_cls.dp)
-    register_all_handlers(bot_cls.dp)
-
     bot_cls.initializer.run()
 
     check_readiness()
 
+    register_all_middlewares(bot_cls.dp, bot_cls.config)
+    register_all_filters(bot_cls.dp)
+    register_all_handlers(bot_cls.dp)
 
     # start
     try:
