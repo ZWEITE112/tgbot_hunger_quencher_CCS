@@ -2,6 +2,8 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 import functools
 
+from aiogram.types import CallbackQuery
+
 from bot_cls import bot_cls
 from tgbot.keyboards.inline import inline_keyboard
 from tgbot.misc.total_price_counter import total_price_counter
@@ -59,7 +61,9 @@ async def kb_order_menu(callback_query: types.CallbackQuery, state: FSMContext):
         await state.set_state("view_menu")
     elif callback_query.data == "button_finish_ordering":
         await state.set_state("submitting_an_order_for_execution")
-        await callback_query.answer()
+        await callback_query.answer("Мы получили ваш заказ, ждите сообщения о его готовности. "
+                                    "Спасибо, что выбрали нас!", show_alert=True)
+        # types.ReplyKeyboardRemove()
 
 
 def register_callback(dp: Dispatcher):
