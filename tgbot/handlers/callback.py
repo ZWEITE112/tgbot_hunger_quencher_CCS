@@ -1,8 +1,5 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-import functools
-
-from aiogram.types import CallbackQuery
 
 from bot_cls import bot_cls
 from tgbot.keyboards.inline import inline_keyboard
@@ -22,7 +19,10 @@ async def button_choose_menu(callback_query: types.CallbackQuery, state: FSMCont
         await callback_query.answer()
     elif callback_query.data == "button_ordering":
         total_price = str(total_price_counter.total_counter(0))
-        await callback_query.message.edit_reply_markup(reply_markup=inline_keyboard.kb_order_menu) #f"Полная стоимость вашего заказа: {total_price}руб.",
+        await bot_cls.bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                      message_id=callback_query.message.message_id,
+                                      text=f"Полная стоимость вашего заказа: {total_price}руб.")
+        await callback_query.message.edit_reply_markup(reply_markup=inline_keyboard.kb_order_menu)
         await state.set_state("order_menu")
         await callback_query.answer()
 
@@ -57,13 +57,16 @@ async def kb_bakery_menu(callback_query: types.CallbackQuery, state: FSMContext)
 
 async def kb_order_menu(callback_query: types.CallbackQuery, state: FSMContext):
     if callback_query.data == "come_back":
+        await bot_cls.bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                            message_id=callback_query.message.message_id,
+                                            text="Я вас не тороплю, можете продолжать выбирать блюда.")
         await callback_query.message.edit_reply_markup(inline_keyboard.kb_menu)
         await state.set_state("view_menu")
     elif callback_query.data == "button_finish_ordering":
         await state.set_state("submitting_an_order_for_execution")
+        await callback_query.message.edit_reply_markup()
         await callback_query.answer("Мы получили ваш заказ, ждите сообщения о его готовности. "
                                     "Спасибо, что выбрали нас!", show_alert=True)
-        # types.ReplyKeyboardRemove()
 
 
 def register_callback(dp: Dispatcher):
@@ -71,3 +74,8 @@ def register_callback(dp: Dispatcher):
     dp.register_callback_query_handler(kb_main_courses_menu, state="main_courses_menu")
     dp.register_callback_query_handler(kb_bakery_menu, state="bakery_menu")
     dp.register_callback_query_handler(kb_order_menu, state="order_menu")
+
+    # message.from_user.id
+    # editMessageText
+    # f"Полная стоимость вашего заказа: {total_price}руб.",
+    # total_price = str(total_price_counter.total_counter(0))
