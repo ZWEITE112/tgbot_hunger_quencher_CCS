@@ -10,7 +10,7 @@ class Order(BaseModel):
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
-    user = relationship('User', uselist=False, backref=backref('orders', cascade='all, delete-orphan'))
+    user = relationship('Users', uselist=False, backref=backref('orders', cascade='all, delete-orphan'))
 
     order_list = Column(Unicode(1024))
 

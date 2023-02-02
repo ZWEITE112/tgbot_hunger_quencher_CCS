@@ -8,6 +8,12 @@ from aiogram.utils.callback_data import CallbackData
 
 class InLineKb:
     def __init__(self):
+        self.inline_btn_go = InlineKeyboardButton("Получить заказы", callback_data="button_get_orders")
+        self.inline_btn_oc = InlineKeyboardButton("Заказы выполнены", callback_data="button_orders_completed")
+
+        self.inline_btn_mc = InlineKeyboardButton("Вторые блюда", callback_data="button_main_courses")
+        self.inline_btn_b = InlineKeyboardButton("Выпечка", callback_data="button_bakery")
+
         self.inline_btn_mc = InlineKeyboardButton("Вторые блюда", callback_data="button_main_courses")
         self.inline_btn_b = InlineKeyboardButton("Выпечка", callback_data="button_bakery")
 
@@ -15,6 +21,8 @@ class InLineKb:
         self.inline_btn_op = InlineKeyboardButton("Оформление заказа", callback_data="button_ordering")
         self.inline_btn_finish_op = InlineKeyboardButton("Закончить оформление заказа",
                                                          callback_data="button_finish_ordering")
+
+        self.kb_admin = InlineKeyboardMarkup().add(self.inline_btn_go)
 
         self.kb_menu = InlineKeyboardMarkup().row(self.inline_btn_mc, self.inline_btn_b).add(self.inline_btn_op)
 

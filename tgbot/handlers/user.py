@@ -4,12 +4,20 @@ from aiogram.types import Message
 
 from bot_cls import bot_cls
 from tgbot.keyboards.inline import inline_keyboard
-from tgbot.models.user import User
+from tgbot.models.order import Order
+from tgbot.models.users import Users
 
 
-async def user_start(message: Message, state: FSMContext):
-    await message.reply("Здраствуйте, чтобы активировать меня, введите секретный ключ.")
-    await state.set_state('key_input')
+async def user_start(message: Message, state: FSMContext, config):
+    not_accepting_orders = bot_cls.sql.session.query(Order).filter(
+        Order.Checked == False
+    ).all()
+    if not_accepting_orders:
+        await state.set_state('submitting_an_order_for_execution')
+        await message.reply("Ваш заказ ещё обрабатывается.")
+    elif state.get_state() != "submitting_an_order_for_execution":
+        await message.reply("Здраствуйте, чтобы активировать меня, введите секретный ключ.")
+        await state.set_state('key_input')
 
 
 async def check_secret_key(message: Message, state: FSMContext, config):
@@ -22,7 +30,7 @@ async def check_secret_key(message: Message, state: FSMContext, config):
 
 
 async def checkin_user_name(message: Message, state: FSMContext):
-    user_model = bot_cls.sql.session.query(User).filter(User.tg_id == message.from_user.id).first()
+    user_model = bot_cls.sql.session.query(Users).filter(Users.tg_id == message.from_user.id).first()
     if user_model is None:
         await message.answer("Перед демонстрацией меню, пожалуйста, напищите мне свои ФИО.")
         await state.set_state('new_user')
@@ -35,7 +43,7 @@ async def checkin_user_name(message: Message, state: FSMContext):
 
 
 async def new_user(message: Message, state: FSMContext):
-    new_user_model = User(tg_id=message.from_user.id, full_name=message.text)
+    new_user_model = Users(tg_id=message.from_user.id, full_name=message.text)
     bot_cls.sql.session.add(new_user_model)
     bot_cls.sql.protected_commit()
     await message.reply(

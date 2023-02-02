@@ -3,9 +3,11 @@ from aiogram.dispatcher import FSMContext
 
 from bot_cls import bot_cls
 from tgbot.keyboards.inline import inline_keyboard
+from tgbot.misc.string_concatenation import string_concatenation
 from tgbot.misc.total_price_counter import total_price_counter
 from tgbot.models.main_courses import MainCourse
 from tgbot.models.bakery import Bakery
+from tgbot.models.order import Order
 
 
 async def button_choose_menu(callback_query: types.CallbackQuery, state: FSMContext):
@@ -31,12 +33,14 @@ async def kb_main_courses_menu(callback_query: types.CallbackQuery, state: FSMCo
     if callback_query.data == "come_back":
         await callback_query.message.edit_reply_markup(inline_keyboard.kb_menu)
         await state.set_state("view_menu")
+        await callback_query.answer()
     elif callback_query.data.startswith("button_main_courses"):
         main_course = bot_cls.sql.session.query(MainCourse).filter(
             MainCourse.id == int(callback_query.data[len("button_main_courses"):])
         ).first()
+        second_courses_list = string_concatenation.merger(main_course.dish_name)
         second_courses_price = print(total_price_counter.total_counter(main_course.price))
-        # print(second_courses_price)
+        print(second_courses_list)
         await callback_query.message.answer(f'{main_course.dish_name} - {main_course.price}')
         await callback_query.answer()
 
@@ -45,28 +49,53 @@ async def kb_bakery_menu(callback_query: types.CallbackQuery, state: FSMContext)
     if callback_query.data == "come_back":
         await callback_query.message.edit_reply_markup(inline_keyboard.kb_menu)
         await state.set_state("view_menu")
+        await callback_query.answer()
     elif callback_query.data.startswith("button_bakery"):
         bakery = bot_cls.sql.session.query(Bakery).filter(
-        Bakery.id == int(callback_query.data[len("button_bakery"):])
+            Bakery.id == int(
+                callback_query.data[len("button_bakery"):]
+            )
         ).first()
+        baking_list = string_concatenation.merger(bakery.dish_name)
         baking_price = total_price_counter.total_counter(bakery.price)
-        # print(baking_price)
+        print(baking_list)
         await callback_query.message.answer(f'{bakery.dish_name} - {bakery.price}')
         await callback_query.answer()
 
 
 async def kb_order_menu(callback_query: types.CallbackQuery, state: FSMContext):
     if callback_query.data == "come_back":
-        await bot_cls.bot.edit_message_text(chat_id=callback_query.message.chat.id,
-                                            message_id=callback_query.message.message_id,
-                                            text="Я вас не тороплю, можете продолжать выбирать блюда.")
+        await bot_cls.bot.edit_message_text(
+            chat_id=callback_query.message.chat.id,
+            message_id=callback_query.message.message_id,
+            text="Я вас не тороплю, можете продолжать выбирать блюда."
+        )
         await callback_query.message.edit_reply_markup(inline_keyboard.kb_menu)
         await state.set_state("view_menu")
+        await callback_query.answer()
     elif callback_query.data == "button_finish_ordering":
+        if state.get_state() == 'admin_menu':
+            await callback_query.message.answer(
+                "В данный момент невозможно офромить заказ."
+            )
+            return
+
+        order = Order(
+            user_id=callback_query.from_user.id,
+            order_list=string_concatenation.concatenator[:-1],
+            total_price=total_price_counter.total_count
+        )
+        bot_cls.sql.session.add(order)
+        bot_cls.sql.protected_commit()
         await state.set_state("submitting_an_order_for_execution")
         await callback_query.message.edit_reply_markup()
-        await callback_query.answer("Мы получили ваш заказ, ждите сообщения о его готовности. "
-                                    "Спасибо, что выбрали нас!", show_alert=True)
+        await callback_query.message.answer(
+            "Мы получили ваш заказ, ждите сообщения о его готовности. Спасибо, что выбрали нас!"
+        )
+        await callback_query.answer(
+            "Мы получили ваш заказ, ждите сообщения о его готовности. Спасибо, что выбрали нас!",
+            show_alert=True
+        )
 
 
 def register_callback(dp: Dispatcher):
@@ -74,8 +103,3 @@ def register_callback(dp: Dispatcher):
     dp.register_callback_query_handler(kb_main_courses_menu, state="main_courses_menu")
     dp.register_callback_query_handler(kb_bakery_menu, state="bakery_menu")
     dp.register_callback_query_handler(kb_order_menu, state="order_menu")
-
-    # message.from_user.id
-    # editMessageText
-    # f"Полная стоимость вашего заказа: {total_price}руб.",
-    # total_price = str(total_price_counter.total_counter(0))

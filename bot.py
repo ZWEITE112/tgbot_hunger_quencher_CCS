@@ -22,7 +22,7 @@ def register_all_filters(dp):
 
 
 def register_all_handlers(dp):
-    # register_admin(dp)
+    register_admin(dp)
     register_callback(dp)
     register_user(dp)
 
